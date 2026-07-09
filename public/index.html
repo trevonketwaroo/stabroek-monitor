@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stabroek Monitor — Guyana's oil economy, charted</title>
+<script>document.documentElement.classList.add('js-anim');</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1520; --card: #16212f; --border: #24354a;
+    --text: #e8eef5; --muted: #8fa3b8; --accent: #38b26a; --gold: #e8b13f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 32px 20px 60px; }
+  header h1 { font-size: 30px; letter-spacing: -0.5px; }
+  header h1 span { color: var(--accent); }
+  header p { color: var(--muted); margin-top: 6px; max-width: 640px; }
+  .tile, .card { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+  .tile:hover { transform: translateY(-3px); border-color: #3b5a7d; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+  @media (prefers-reduced-motion: no-preference) {
+    .js-anim header h1, .js-anim header p { opacity: 0; animation: fadeUp 0.7s ease forwards; }
+    .js-anim header p { animation-delay: 0.12s; }
+    .js-anim header h1 span {
+      background: linear-gradient(90deg, #38b26a, #8ce7b1, #38b26a);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: fadeUp 0.7s ease forwards, shimmer 7s linear 1s infinite;
+    }
+    .js-anim .tile, .js-anim .card { opacity: 0; transform: translateY(16px); }
+    .js-anim .tile.reveal, .js-anim .card.reveal { opacity: 1; transform: none; transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease; }
+    .js-anim .tile.reveal:hover { transform: translateY(-3px); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+  }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 28px 0; }
+  .tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .tile .label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tile .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+  .tile .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 22px; }
+  .card h2 { font-size: 18px; margin-bottom: 4px; }
+  .card .src { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
+  .card .src a { color: var(--muted); }
+  canvas { max-height: 320px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .findings li { margin: 0 0 12px 18px; }
+  .findings strong { color: var(--gold); }
+  footer { color: var(--muted); font-size: 13.5px; margin-top: 34px; border-top: 1px solid var(--border); padding-top: 18px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Stabroek <span>Monitor</span></h1>
+    <p>Guyana's oil economy, charted: Stabroek block production, Brent prices, and where the Natural Resource Fund money goes. Market data updates daily; official figures are curated from government publications with sources cited.</p>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Brent crude</div><div class="value" id="tile-brent">—</div><div class="sub" id="tile-brent-date"></div></div>
+    <div class="tile"><div class="label">Latest production</div><div class="value" id="tile-prod">—</div><div class="sub" id="tile-prod-note"></div></div>
+    <div class="tile"><div class="label">NRF balance</div><div class="value" id="tile-nrf">—</div><div class="sub" id="tile-nrf-date"></div></div>
+    <div class="tile"><div class="label">FPSOs producing</div><div class="value" id="tile-fpso">—</div><div class="sub" id="tile-fpso-cap"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Brent crude, monthly average</h2>
+    <div class="src">Source: <a href="https://fred.stlouisfed.org/series/DCOILBRENTEU" target="_blank" rel="noopener">FRED DCOILBRENTEU</a> — updated daily by GitHub Actions</div>
+    <canvas id="chart-brent"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Stabroek block production</h2>
+    <div class="src">Annual averages per U.S. EIA; dated observations from Ministry of Natural Resources and operator releases (sources in <a href="https://github.com/trevonketwaroo/stabroek-monitor/blob/main/data/production.json" target="_blank" rel="noopener">data/production.json</a>)</div>
+    <canvas id="chart-prod"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>Natural Resource Fund — approved withdrawals to the national budget</h2>
+    <div class="src">Sources cited in <a href="https://github.com/trevonketwaroo/stabroek-monitor/blob/main/data/nrf.json" target="_blank" rel="noopener">data/nrf.json</a>; monthly report PDFs at <a href="https://finance.gov.gy" target="_blank" rel="noopener">finance.gov.gy</a></div>
+    <canvas id="chart-nrf"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>The fleet</h2>
+    <div class="src">Stabroek block FPSOs, in first-oil order</div>
+    <table id="fleet-table">
+      <thead><tr><th>Vessel</th><th>Project</th><th>First oil</th><th>Capacity (bpd)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card findings">
+    <h2>Findings</h2>
+    <div class="src">Written analysis — the charts above are the evidence</div>
+    <ul>
+      <li><strong>Volume up, revenue down.</strong> In 2025 production kept climbing (a fourth FPSO, ONE GUYANA, started up in August and output hit 900,000 bpd by November) — yet oil revenue slipped, because Brent's decline outweighed the extra barrels. The result: 2026 is the first year Guyana's approved NRF withdrawal <em>fell</em> versus the prior year (US$2.37B vs US$2.46B). Price risk, not production risk, is now the fund's dominant variable.</li>
+      <li><strong>From zero to a top-25 producer in six years.</strong> Annual average production went from 74,000 bpd (2020) to 616,000 bpd (2024), with capacity above 900,000 bpd by late 2025 — among the fastest offshore ramp-ups ever recorded.</li>
+      <li><strong>The NRF is a flow-through, not yet a nest egg.</strong> Of roughly US$9.3B deposited since 2020, over US$6B has already been transferred to the national budget. The balance (~US$3.96B, May 2026) grows far slower than headline oil revenue suggests — a deliberate policy choice worth watching as production doubles.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Built by <a href="https://github.com/trevonketwaroo" target="_blank" rel="noopener">Trevon Ketwaroo</a> in Georgetown, Guyana ·
+    <a href="https://github.com/trevonketwaroo/stabroek-monitor" target="_blank" rel="noopener">Source & data provenance on GitHub</a> ·
+    Not affiliated with any operator or government body.
+  </footer>
+</div>
+
+<script>
+const fmt = (n) => n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : n;
+const C = { grid: '#24354a', tick: '#8fa3b8', green: '#38b26a', gold: '#e8b13f', blue: '#5b9bd5' };
+Chart.defaults.color = C.tick;
+Chart.defaults.borderColor = C.grid;
+
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Staggered reveal of tiles and cards as they enter the viewport
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('reveal'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.tile, .card').forEach((el, i) => {
+  el.style.transitionDelay = `${Math.min(i * 80, 400)}ms`;
+  io.observe(el);
+});
+// Fallback: if the observer never fires (throttled/headless contexts), reveal everything
+setTimeout(() => {
+  document.querySelectorAll('.tile:not(.reveal), .card:not(.reveal)').forEach((el) => el.classList.add('reveal'));
+}, 1800);
+
+// Count-up animation for stat tiles
+function countUp(el, end, format, dur = 1000) {
+  if (reducedMotion) { el.textContent = format(end); return; }
+  const t0 = performance.now();
+  (function tick(t) {
+    const p = Math.min((t - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = format(end * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+  // Guarantee the final value even where rAF is throttled or paused
+  setTimeout(() => { el.textContent = format(end); }, dur + 300);
+}
+
+// Progressive line-drawing animation (Chart.js per-point delays)
+function progressiveLine(pointCount, totalMs = 1300) {
+  if (reducedMotion) return undefined;
+  const per = totalMs / pointCount;
+  return {
+    x: { type: 'number', easing: 'linear', duration: per, from: NaN,
+      delay(ctx) { if (ctx.type !== 'data' || ctx.xStarted) return 0; ctx.xStarted = true; return ctx.index * per; } },
+    y: { type: 'number', easing: 'linear', duration: per, from: 'previous',
+      delay(ctx) { if (ctx.type !== 'data' || ctx.yStarted) return 0; ctx.yStarted = true; return ctx.index * per; } },
+  };
+}
+
+fetch('/api/data').then(r => r.json()).then(({ brent, production, nrf, fpsos }) => {
+  // Tiles (count-up)
+  countUp(document.getElementById('tile-brent'), brent.latest.usd, (v) => '$' + v.toFixed(2));
+  document.getElementById('tile-brent-date').textContent = brent.latest.date + ' · FRED';
+  const lastObs = production.observations.at(-1);
+  countUp(document.getElementById('tile-prod'), lastObs.bpd, (v) => fmt(v) + ' bpd');
+  document.getElementById('tile-prod-note').textContent = lastObs.date + ' · ' + lastObs.note;
+  const lastBal = nrf.balances.at(-1);
+  countUp(document.getElementById('tile-nrf'), lastBal.usd_millions, (v) => 'US$' + (v / 1000).toFixed(2) + 'B');
+  document.getElementById('tile-nrf-date').textContent = 'end ' + lastBal.date;
+  countUp(document.getElementById('tile-fpso'), fpsos.fleet.length, (v) => String(Math.round(v)), 700);
+  const cap = fpsos.fleet.reduce((a, f) => a + f.capacity_bpd, 0);
+  document.getElementById('tile-fpso-cap').textContent = fmt(cap) + ' bpd combined capacity';
+
+  // Brent chart
+  new Chart(document.getElementById('chart-brent'), {
+    type: 'line',
+    data: {
+      labels: brent.monthly.map(m => m.month),
+      datasets: [{ label: 'Brent monthly avg (US$/bbl)', data: brent.monthly.map(m => m.avg_usd), borderColor: C.gold, backgroundColor: 'rgba(232,177,63,0.12)', fill: true, pointRadius: 0, tension: 0.25 }],
+    },
+    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 12 } } }, animations: progressiveLine(brent.monthly.length) },
+  });
+
+  // Production chart: annual bars + dated observation points
+  const years = production.annual_avg_bpd;
+  new Chart(document.getElementById('chart-prod'), {
+    data: {
+      labels: [...years.map(y => String(y.year)), ...production.observations.map(o => o.date)],
+      datasets: [
+        { type: 'bar', label: 'Annual average (bpd)', data: [...years.map(y => y.bpd), ...production.observations.map(() => null)], backgroundColor: C.green },
+        { type: 'scatter', label: 'Reported observations (bpd)', data: [...years.map(() => null), ...production.observations.map(o => o.bpd)], backgroundColor: C.blue, pointRadius: 6 },
+      ],
+    },
+    options: {
+      scales: { y: { ticks: { callback: (v) => fmt(v) } } },
+      animation: reducedMotion ? false : { delay: (ctx) => ctx.type === 'data' ? ctx.dataIndex * 90 : 0, duration: 700, easing: 'easeOutQuart' },
+    },
+  });
+
+  // NRF withdrawals chart
+  new Chart(document.getElementById('chart-nrf'), {
+    type: 'bar',
+    data: {
+      labels: nrf.annual_withdrawals.map(w => String(w.year)),
+      datasets: [{ label: 'Approved withdrawal (US$M)', data: nrf.annual_withdrawals.map(w => w.usd_millions), backgroundColor: [C.blue, C.gold] }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      animation: reducedMotion ? false : { delay: (ctx) => ctx.type === 'data' ? ctx.dataIndex * 160 : 0, duration: 800, easing: 'easeOutQuart' },
+    },
+  });
+
+  // Fleet table
+  document.querySelector('#fleet-table tbody').innerHTML = fpsos.fleet
+    .map(f => `<tr><td>${f.name}</td><td>${f.project}</td><td>${f.first_oil}</td><td>${f.capacity_bpd.toLocaleString()}</td></tr>`)
+    .join('');
+});
+</script>
+</body>
+</html>

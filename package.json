@@ -1,0 +1,18 @@
+{
+  "name": "stabroek-monitor",
+  "version": "0.1.0",
+  "description": "Live dashboard tracking Guyana's oil production, Brent prices, and the Natural Resource Fund",
+  "main": "server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "collect": "node collector/collect.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

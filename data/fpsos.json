@@ -1,0 +1,9 @@
+{
+  "note": "FPSO (floating production, storage and offloading) vessels operating in the Stabroek block.",
+  "fleet": [
+    { "name": "Liza Destiny", "project": "Liza Phase 1", "first_oil": "2019-12", "capacity_bpd": 150000, "source_url": "https://corporate.exxonmobil.com/locations/guyana/operations/guyana-project-overview" },
+    { "name": "Liza Unity", "project": "Liza Phase 2", "first_oil": "2022-02", "capacity_bpd": 250000, "source_url": "https://corporate.exxonmobil.com/locations/guyana/operations/guyana-project-overview" },
+    { "name": "Prosperity", "project": "Payara", "first_oil": "2023-11", "capacity_bpd": 220000, "source_url": "https://corporate.exxonmobil.com/locations/guyana/operations/guyana-project-overview" },
+    { "name": "ONE GUYANA", "project": "Yellowtail", "first_oil": "2025-08", "capacity_bpd": 250000, "source_url": "https://corporate.exxonmobil.com/news/news-releases/2025/0808_exxonmobil-guyana-begins-production-at-fourth-offshore-guyana-project" }
+  ]
+}

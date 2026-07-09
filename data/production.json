@@ -1,0 +1,15 @@
+{
+  "note": "Curated from official publications and press releases. Figures are gross Stabroek block crude production. Each entry cites its source.",
+  "annual_avg_bpd": [
+    { "year": 2020, "bpd": 74000, "source": "U.S. EIA, Guyana country analysis", "source_url": "https://www.eia.gov/todayinenergy/detail.php?id=62103" },
+    { "year": 2021, "bpd": 101000, "source": "U.S. EIA, Guyana country analysis", "source_url": "https://www.eia.gov/todayinenergy/detail.php?id=62103" },
+    { "year": 2022, "bpd": 277000, "source": "U.S. EIA, Guyana country analysis", "source_url": "https://www.eia.gov/todayinenergy/detail.php?id=62103" },
+    { "year": 2023, "bpd": 391000, "source": "U.S. EIA, Guyana country analysis", "source_url": "https://www.eia.gov/todayinenergy/detail.php?id=62103" },
+    { "year": 2024, "bpd": 616000, "source": "U.S. EIA, Guyana country analysis", "source_url": "https://www.eia.gov/todayinenergy/detail.php?id=62103" }
+  ],
+  "observations": [
+    { "date": "2024-12", "bpd": 652000, "note": "Q4 2024 quarterly average", "source": "Energy Analytics Institute fact sheet", "source_url": "https://energy-analytics-institute.org/2025/07/20/fact-sheet-guyana-oil-production-offshore-in-4q24-and-projected-for-2027-and-2030/" },
+    { "date": "2025-01", "bpd": 658000, "note": "Ministry of Natural Resources, January 2025", "source": "OilPrice.com citing MNR", "source_url": "https://oilprice.com/Energy/Crude-Oil/Guyana-is-the-Worlds-Newest-Petro-State.html" },
+    { "date": "2025-11", "bpd": 900000, "note": "New production milestone announced by operator", "source": "ExxonMobil Guyana press release, 12 Nov 2025", "source_url": "https://corporate.exxonmobil.com/locations/guyana/news-releases/11122025-daily-oil-production-hits-900000-barrels-in-guyanas-stabroek-block" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "note": "Guyana Natural Resource Fund. Balances and flows curated from Ministry of Finance monthly reports and press coverage; each entry cites its source. Monthly report PDFs: https://finance.gov.gy (Natural Resource Fund publications).",
+  "balances": [
+    { "date": "2025-09", "usd_millions": 3600, "source": "NRF monthly summary, Ministry of Finance", "source_url": "https://finance.gov.gy/wp-content/uploads/2025/09/nrf-august2025-monthly.pdf" },
+    { "date": "2026-05", "usd_millions": 3960, "source": "Energy Magazine Guyana, NRF withdrawal rule explainer", "source_url": "https://energyguyana.gy/index.php/2026/02/09/how-guyanas-natural-resource-fund-withdrawal-rule-works/" }
+  ],
+  "lifetime": {
+    "total_deposits_usd_millions": 9300,
+    "total_withdrawals_usd_millions": 6000,
+    "as_of": "2026-05",
+    "source": "Rio Times / Ministry of Finance figures",
+    "source_url": "https://www.riotimesonline.com/guyana-natural-resource-fund-2026-withdrawal-first-decline-oil-wealth/"
+  },
+  "annual_withdrawals": [
+    { "year": 2025, "usd_millions": 2460, "note": "approved withdrawal", "source_url": "https://www.riotimesonline.com/guyana-natural-resource-fund-2026-withdrawal-first-decline-oil-wealth/" },
+    { "year": 2026, "usd_millions": 2370, "note": "approved withdrawal - first year-over-year decline", "source_url": "https://www.riotimesonline.com/guyana-natural-resource-fund-2026-withdrawal-first-decline-oil-wealth/" }
+  ]
+}
