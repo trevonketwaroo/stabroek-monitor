@@ -1,7 +1,7 @@
 {
   "source": "FRED series DCOILBRENTEU (Brent Europe, daily), aggregated to monthly averages",
   "source_url": "https://fred.stlouisfed.org/series/DCOILBRENTEU",
-  "updated": "2026-08-30",
+  "updated": "2026-08-31",
   "latest": {
     "date": "2026-08-25",
     "usd": 88.24
